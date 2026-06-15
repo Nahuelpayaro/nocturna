@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* ----------------------------------------------------------------------------
+   nocturna — design tokens
+   95% black & white, amber used with an eyedropper. Dark mode is the default
+   (and only) theme: the night IS the brand.
+---------------------------------------------------------------------------- */
+@theme {
+  --color-noche: #0a0a0a; /* main background — "night black", never pure #000 */
+  --color-hueso: #f5f5f3; /* the brand "white", slightly warm */
+  --color-gris: #82827b; /* secondary text — lightened to pass WCAG AA (~5:1) on noche */
+  --color-gris-sutil: #1c1c1c; /* borders, dividers over dark */
+  --color-ambar: #d9a441; /* ACCENT — a panther's eye glowing in the dark */
+
+  --font-display: var(--font-space-grotesk); /* titles, display */
+  --font-sans: var(--font-inter); /* body copy */
+  --font-mono: var(--font-space-mono); /* labels, numbers, technical detail */
+  --font-wordmark: var(--font-unbounded); /* the "nocturna" wordmark only */
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-noche);
+  color: var(--color-hueso);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Cinematic film grain over the night background — adds depth without weight. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Promote to its own compositor layer so it never re-rasterizes on scroll. */
+  transform: translateZ(0);
+}
+
+/* prefers-reduced-motion is mandatory: kill animation/transition globally as a
+   safety net. Component-level logic (Framer Motion's useReducedMotion) handles
+   the rest, but this guarantees nothing moves if the user opted out. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
