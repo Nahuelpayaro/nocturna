@@ -75,3 +75,9 @@ where not interno
 group by 1, 2, 3;
 
 revoke all on public.ccp_daily_counts from anon, authenticated;
+
+-- 5. Mail opcional (Nahuel, 20/11).
+alter table public.ccp_waitlist add column if not exists mail text;
+alter table public.ccp_waitlist drop constraint if exists ccp_waitlist_mail_check;
+alter table public.ccp_waitlist add constraint ccp_waitlist_mail_check
+  check (mail is null or (char_length(mail) <= 254 and mail ~* '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$'));
