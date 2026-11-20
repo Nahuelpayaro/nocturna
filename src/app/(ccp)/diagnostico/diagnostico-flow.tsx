@@ -337,7 +337,7 @@ export function DiagnosticoFlow() {
                 <Field id="w-whatsapp" label="Tu WhatsApp" helper="Te escribimos solo por acá. Sin spam." error={erroresForm.whatsapp}>
                   <Input id="w-whatsapp" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="Ej.: 11 5555 5555" maxLength={32} value={datos.whatsapp} onChange={(e) => dato("whatsapp", e.target.value)} invalid={Boolean(erroresForm.whatsapp)} aria-describedby={fieldHelperId("w-whatsapp")} />
                 </Field>
-                {/* PROVISORIO: etiqueta a confirmar con Contenido. Mail opcional (Nahuel, 20/11). */}
+                {/* Mail opcional (Nahuel, 20/11). */}
                 <Field id="w-mail" label="Tu mail (opcional)" error={erroresForm.mail}>
                   <Input id="w-mail" type="email" inputMode="email" autoComplete="email" maxLength={MAX_MAIL} value={datos.mail} onChange={(e) => dato("mail", e.target.value)} invalid={Boolean(erroresForm.mail)} aria-describedby={erroresForm.mail ? fieldHelperId("w-mail") : undefined} />
                 </Field>
@@ -372,8 +372,9 @@ export function DiagnosticoFlow() {
                   </Button>
                   <p className="nc-t-body-m nc-muted">Nahuel te escribe por WhatsApp.</p>
                 </div>
-                {/* PROVISORIO: el aviso de privacidad depende de dónde se guarden los inscriptos (TEXTOS, sección 7, punto 3). */}
-                <p className="nc-t-body-m nc-subtle">[Aviso de privacidad: pendiente]</p>
+                <p className="nc-t-body-m nc-muted">
+                  Guardamos tus datos y tus respuestas del diagnóstico para escribirte sobre el programa piloto y para saber por dónde llegaste. No los vendemos. El píxel de Meta solo registra que te anotaste, sin tu nombre, tu WhatsApp ni tu mail. Para ver, corregir o borrar tus datos, respondé el mensaje de Nahuel o escribinos por Instagram.
+                </p>
               </form>
             </div>
           </Section>

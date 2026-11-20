@@ -158,6 +158,6 @@ test("inscripción: un mail inválido o demasiado largo da el error del campo", 
     const r = d.validarInscripcion({ ...base, mail });
     assert.equal(r.ok, false, mail);
     if (r.ok) continue;
-    assert.deepEqual(r.errores, { mail: "Revisá el mail o dejalo vacío." }, mail);
+    assert.deepEqual(r.errores, { mail: "Revisá tu mail o dejalo vacío." }, mail);
   }
 });

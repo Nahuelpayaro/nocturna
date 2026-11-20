@@ -144,8 +144,7 @@ export const ERRORES_INSCRIPCION: Record<CampoInscripcion, string> = {
   nombre: "Escribí tu nombre.",
   inmobiliaria: "Escribí el nombre de tu inmobiliaria.",
   whatsapp: "Escribí tu WhatsApp con el código de área, por ejemplo 11 5555 5555.",
-  // PROVISORIO: texto a confirmar con Contenido.
-  mail: "Revisá el mail o dejalo vacío.",
+  mail: "Revisá tu mail o dejalo vacío.",
   acepta: "Marcá la casilla para que podamos escribirte.",
 };
 
