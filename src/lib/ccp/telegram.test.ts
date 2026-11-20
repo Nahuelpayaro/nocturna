@@ -10,6 +10,7 @@ const registro = {
   nombre: "Laura <b>",
   inmobiliaria: "Sur & Cía",
   whatsapp: "+5491155555555",
+  mail: null as string | null,
   answers: { consultasMes: 100, visitasMes: 80, operacionesMes: 2, comision: 3000, moneda: "USD" as const, respondeATiempo: 2 },
   result: { valorConsulta: 60, expuestas: 80, escala: 480 },
   utm_source: "meta",
@@ -92,4 +93,10 @@ test("si Telegram contesta error, tira o se pasa del tiempo, devuelve false sin 
   const inicio = Date.now();
   assert.equal(await t.enviarTelegram({ token: "t", chatId: "c", texto: "x", fetch: lento, timeoutMs: 50 }), false);
   assert.ok(Date.now() - inicio < 1000);
+});
+
+test("el mail va en el aviso solo si el inscripto lo dejó", () => {
+  assert.equal(t.mensajeInscripto(registro, { produccion: true }).includes("Mail:"), false);
+  const texto = t.mensajeInscripto({ ...registro, mail: "laura@sur.com" }, { produccion: true });
+  assert.match(texto, /\nMail: laura@sur\.com\n/);
 });

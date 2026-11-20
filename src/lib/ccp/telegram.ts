@@ -30,6 +30,7 @@ export function mensajeInscripto(r: WaitlistRecord, opts: { produccion: boolean;
     `Nombre: ${r.nombre}`,
     `Inmobiliaria: ${r.inmobiliaria}`,
     `WhatsApp: https://wa.me/${r.whatsapp.replace(/\D/g, "")}`,
+    ...(r.mail ? [`Mail: ${r.mail}`] : []),
     "",
     `Consultas por mes: ${a.consultasMes}`,
     `Visitas por mes: ${a.visitasMes}`,

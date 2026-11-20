@@ -46,6 +46,7 @@ function fila(r: WaitlistRecord) {
     nombre: r.nombre,
     inmobiliaria: r.inmobiliaria,
     whatsapp: r.whatsapp,
+    mail: r.mail,
     consultas_mes: r.answers.consultasMes,
     visitas_mes: r.answers.visitasMes,
     operaciones_mes: r.answers.operacionesMes,

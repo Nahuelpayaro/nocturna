@@ -11,6 +11,7 @@ function registro(id: string, whatsapp: string) {
     nombre: "Laura",
     inmobiliaria: "Sur",
     whatsapp,
+    mail: "laura@sur.com" as string | null,
     answers: { consultasMes: 100, visitasMes: 80, operacionesMes: 2, comision: 3000, moneda: "USD" as const, respondeATiempo: 2 },
     result: { valorConsulta: 60, expuestas: 80, escala: 480 },
     utm_source: null,

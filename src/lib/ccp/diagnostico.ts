@@ -133,21 +133,28 @@ export function formatMonto(n: number, moneda: Moneda): string {
 
 /* ---------- Lista de espera ---------- */
 
-export type CampoInscripcion = "nombre" | "inmobiliaria" | "whatsapp" | "acepta";
+export type CampoInscripcion = "nombre" | "inmobiliaria" | "whatsapp" | "mail" | "acepta";
 
-export type InscripcionInput = { nombre: string; inmobiliaria: string; whatsapp: string; acepta: boolean };
+export type InscripcionInput = { nombre: string; inmobiliaria: string; whatsapp: string; mail?: string; acepta: boolean };
 
-export type Inscripcion = { nombre: string; inmobiliaria: string; whatsapp: string };
+/** mail: opcional (Nahuel, 20/11); null si no lo dejó. */
+export type Inscripcion = { nombre: string; inmobiliaria: string; whatsapp: string; mail: string | null };
 
 export const ERRORES_INSCRIPCION: Record<CampoInscripcion, string> = {
   nombre: "Escribí tu nombre.",
   inmobiliaria: "Escribí el nombre de tu inmobiliaria.",
   whatsapp: "Escribí tu WhatsApp con el código de área, por ejemplo 11 5555 5555.",
+  // PROVISORIO: texto a confirmar con Contenido.
+  mail: "Revisá el mail o dejalo vacío.",
   acepta: "Marcá la casilla para que podamos escribirte.",
 };
 
 /** Largo máximo de nombre e inmobiliaria (el campo tiene el mismo maxLength). */
 export const MAX_TEXTO = 120;
+
+/** Largo máximo de un mail (RFC 5321); el mismo check que la columna ccp_waitlist.mail. */
+export const MAX_MAIL = 254;
+const MAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 /**
  * WhatsApp argentino a E.164 móvil (+549 + 10 dígitos). Acepta el código de área con o sin 0,
@@ -191,7 +198,9 @@ export function validarInscripcion(
   if (!inmobiliaria || inmobiliaria.length > MAX_TEXTO) errores.inmobiliaria = ERRORES_INSCRIPCION.inmobiliaria;
   const whatsapp = normalizarWhatsapp(input.whatsapp);
   if (!whatsapp) errores.whatsapp = ERRORES_INSCRIPCION.whatsapp;
+  const mail = String(input.mail ?? "").trim().toLowerCase() || null;
+  if (mail !== null && (mail.length > MAX_MAIL || !MAIL.test(mail))) errores.mail = ERRORES_INSCRIPCION.mail;
   if (input.acepta !== true) errores.acepta = ERRORES_INSCRIPCION.acepta;
   if (Object.keys(errores).length || !whatsapp) return { ok: false, errores };
-  return { ok: true, datos: { nombre, inmobiliaria, whatsapp } };
+  return { ok: true, datos: { nombre, inmobiliaria, whatsapp, mail } };
 }

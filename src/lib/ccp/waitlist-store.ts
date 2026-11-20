@@ -11,6 +11,8 @@ export type WaitlistRecord = {
   inmobiliaria: string;
   /** E.164, +549 y 10 dígitos. Clave para detectar el número repetido. */
   whatsapp: string;
+  /** Opcional, en minúsculas; null si no lo dejó. Nunca sale al píxel ni a la analítica. */
+  mail: string | null;
   answers: { consultasMes: number; visitasMes: number; operacionesMes: number; comision: number; moneda: Moneda; respondeATiempo: number };
   result: Resultado;
   utm_source: string | null;

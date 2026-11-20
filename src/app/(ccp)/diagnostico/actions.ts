@@ -10,6 +10,7 @@ export type JoinWaitlistInput = {
   nombre: string;
   inmobiliaria: string;
   whatsapp: string;
+  mail: string;
   acepta: boolean;
   respuestas: DiagnosticoInput;
   /** Primer toque guardado en el navegador (UTM, fbclid sí/no, referrer). Se sanea acá. */
@@ -40,7 +41,7 @@ export async function joinWaitlist(input: JoinWaitlistInput): Promise<JoinWaitli
       moneda: str(r.moneda),
       respondeATiempo: str(r.respondeATiempo),
     });
-    const inscripcion = validarInscripcion({ nombre: str(raw.nombre), inmobiliaria: str(raw.inmobiliaria), whatsapp: str(raw.whatsapp), acepta: raw.acepta === true });
+    const inscripcion = validarInscripcion({ nombre: str(raw.nombre), inmobiliaria: str(raw.inmobiliaria), whatsapp: str(raw.whatsapp), mail: str(raw.mail), acepta: raw.acepta === true });
     if (!diagnostico.ok || !inscripcion.ok) {
       return {
         ok: false,

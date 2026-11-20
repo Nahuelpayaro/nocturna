@@ -136,10 +136,28 @@ test("inscripción: errores con el texto de la lista de espera", () => {
 
 test("inscripción válida: recorta espacios y normaliza el WhatsApp", () => {
   const r = d.validarInscripcion({ nombre: "  Laura ", inmobiliaria: " Propiedades Sur ", whatsapp: "11 5555 5555", acepta: true });
-  assert.deepEqual(r, { ok: true, datos: { nombre: "Laura", inmobiliaria: "Propiedades Sur", whatsapp: "+5491155555555" } });
+  assert.deepEqual(r, { ok: true, datos: { nombre: "Laura", inmobiliaria: "Propiedades Sur", whatsapp: "+5491155555555", mail: null } });
 });
 
 test("inscripción: rechaza textos más largos que el máximo del campo", () => {
   const r = d.validarInscripcion({ nombre: "a".repeat(d.MAX_TEXTO + 1), inmobiliaria: "Sur", whatsapp: "1155555555", acepta: true });
   assert.equal(r.ok, false);
+});
+
+test("inscripción: el mail es opcional; si viene se recorta y pasa a minúsculas", () => {
+  const base = { nombre: "Laura", inmobiliaria: "Sur", whatsapp: "1155555555", acepta: true };
+  const sin = d.validarInscripcion({ ...base, mail: "   " });
+  assert.equal(sin.ok && sin.datos.mail, null);
+  const con = d.validarInscripcion({ ...base, mail: "  Laura@Sur.COM " });
+  assert.equal(con.ok && con.datos.mail, "laura@sur.com");
+});
+
+test("inscripción: un mail inválido o demasiado largo da el error del campo", () => {
+  const base = { nombre: "Laura", inmobiliaria: "Sur", whatsapp: "1155555555", acepta: true };
+  for (const mail of ["laura", "laura@", "laura@sur", "la ura@sur.com", "a@b@c.com", "x".repeat(250) + "@sur.com"]) {
+    const r = d.validarInscripcion({ ...base, mail });
+    assert.equal(r.ok, false, mail);
+    if (r.ok) continue;
+    assert.deepEqual(r.errores, { mail: "Revisá el mail o dejalo vacío." }, mail);
+  }
 });

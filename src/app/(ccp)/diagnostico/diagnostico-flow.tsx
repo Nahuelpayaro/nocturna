@@ -8,6 +8,7 @@ import {
   formatMonto,
   formatWhatsapp,
   MAX_TEXTO,
+  MAX_MAIL,
   validarDiagnostico,
   validarInscripcion,
   type CampoDiagnostico,
@@ -38,6 +39,7 @@ const FOCO_INSCRIPCION: Array<[CampoInscripcion, string]> = [
   ["nombre", "w-nombre"],
   ["inmobiliaria", "w-inmobiliaria"],
   ["whatsapp", "w-whatsapp"],
+  ["mail", "w-mail"],
   ["acepta", "w-acepta"],
 ];
 
@@ -61,7 +63,7 @@ export function DiagnosticoFlow() {
   const [control, setControl] = useState<{ mensaje: string; campos: CampoDiagnostico[] } | null>(null);
   const [resultado, setResultado] = useState<{ respuestas: Respuestas; resultado: Resultado } | null>(null);
 
-  const [datos, setDatos] = useState({ nombre: "", inmobiliaria: "", whatsapp: "", acepta: false });
+  const [datos, setDatos] = useState({ nombre: "", inmobiliaria: "", whatsapp: "", mail: "", acepta: false });
   const [erroresForm, setErroresForm] = useState<Partial<Record<CampoInscripcion, string>>>({});
   const [estado, setEstado] = useState<Estado>("idle");
   // Última inscripción guardada; si el dueño corrige el número, la próxima la reemplaza.
@@ -149,7 +151,7 @@ export function DiagnosticoFlow() {
     }
     if (res.reason === "invalid" && res.fieldErrors) {
       const f = res.fieldErrors;
-      setErroresForm({ nombre: f.nombre, inmobiliaria: f.inmobiliaria, whatsapp: f.whatsapp, acepta: f.acepta });
+      setErroresForm({ nombre: f.nombre, inmobiliaria: f.inmobiliaria, whatsapp: f.whatsapp, mail: f.mail, acepta: f.acepta });
     }
     setEstado(res.reason === "duplicate" ? "duplicate" : "error");
   };
@@ -160,7 +162,7 @@ export function DiagnosticoFlow() {
     pedirFoco("w-whatsapp");
   };
 
-  const dato = (campo: "nombre" | "inmobiliaria" | "whatsapp", valor: string) => {
+  const dato = (campo: "nombre" | "inmobiliaria" | "whatsapp" | "mail", valor: string) => {
     setDatos((d) => ({ ...d, [campo]: valor }));
     setErroresForm((e) => ({ ...e, [campo]: undefined }));
     if (estado !== "sending") setEstado("idle");
@@ -334,6 +336,10 @@ export function DiagnosticoFlow() {
                 </Field>
                 <Field id="w-whatsapp" label="Tu WhatsApp" helper="Te escribimos solo por acá. Sin spam." error={erroresForm.whatsapp}>
                   <Input id="w-whatsapp" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="Ej.: 11 5555 5555" maxLength={32} value={datos.whatsapp} onChange={(e) => dato("whatsapp", e.target.value)} invalid={Boolean(erroresForm.whatsapp)} aria-describedby={fieldHelperId("w-whatsapp")} />
+                </Field>
+                {/* PROVISORIO: etiqueta a confirmar con Contenido. Mail opcional (Nahuel, 20/11). */}
+                <Field id="w-mail" label="Tu mail (opcional)" error={erroresForm.mail}>
+                  <Input id="w-mail" type="email" inputMode="email" autoComplete="email" maxLength={MAX_MAIL} value={datos.mail} onChange={(e) => dato("mail", e.target.value)} invalid={Boolean(erroresForm.mail)} aria-describedby={erroresForm.mail ? fieldHelperId("w-mail") : undefined} />
                 </Field>
                 <div className={cx("nc-field", erroresForm.acepta && "is-error")}>
                   <Checkbox
