@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Footer, NavBar } from "@/components/ccp";
-import { NAV_LINKS } from "@/lib/ccp/assets";
 import { DiagnosticoFlow } from "./diagnostico-flow";
 
 export const metadata: Metadata = {
@@ -8,15 +7,14 @@ export const metadata: Metadata = {
   title: "Diagnóstico gratuito - Cero Consultas Perdidas",
 };
 
-// Las anclas de la barra y del pie apuntan a la landing.
-const LINKS = NAV_LINKS.map(([label, href]): [string, string] => [label, `/${href}`]);
-
+// Página de destino de los anuncios: sin menú ni links a la landing, para que no haya salidas
+// antes de completar (auditoría mobile, D5). El logo sigue llevando a /.
 export default function DiagnosticoPage() {
   return (
     <div className="nc-landing nc-paper">
-      <NavBar showCta={false} links={LINKS} />
+      <NavBar showCta={false} showMenu={false} links={[]} />
       <DiagnosticoFlow />
-      <Footer showCta={false} links={LINKS} />
+      <Footer showCta={false} compact />
     </div>
   );
 }

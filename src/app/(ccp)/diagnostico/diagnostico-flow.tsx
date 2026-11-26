@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Button, Checkbox, Field, FeatureItem, FormStatus, Headline, Icon, Input, RadioCardGroup, Section, SectionHeader, Select, StatCard, Tag, fieldHelperId, fieldLabelId } from "@/components/ccp";
+import { Button, Checkbox, Field, FeatureItem, FormStatus, Headline, Icon, Input, RadioCardGroup, Section, SectionHeader, StatCard, Tag, fieldHelperId, fieldLabelId } from "@/components/ccp";
 import { cx } from "@/lib/ccp/assets";
 import {
   calcularDiagnostico,
@@ -24,16 +24,17 @@ import { joinWaitlist } from "./actions";
    Preguntas y cálculo: ventas/02-canales.md. Textos de la lista de espera: TEXTOS-LISTA-DE-ESPERA.md, secciones 1 a 3,
    sin plazo (Nahuel, 14/11). */
 
-const VACIO: DiagnosticoInput = { consultas: "", periodo: "mes", visitas: "", operaciones: "", comision: "", moneda: "", respondeATiempo: "" };
+// Pesos ya elegido: el público es Argentina (auditoría mobile, D2).
+const VACIO: DiagnosticoInput = { consultas: "", periodo: "mes", visitas: "", operaciones: "", comision: "", moneda: "ARS", respondeATiempo: "" };
 
 /** Orden de la página, para llevar el foco al primer campo con error. */
 const FOCO_DIAGNOSTICO: Array<[CampoDiagnostico, string]> = [
+  ["respondeATiempo", "d-responde"],
   ["consultas", "d-consultas"],
   ["visitas", "d-visitas"],
   ["operaciones", "d-operaciones"],
   ["comision", "d-comision"],
   ["moneda", "d-moneda"],
-  ["respondeATiempo", "d-responde"],
 ];
 const FOCO_INSCRIPCION: Array<[CampoInscripcion, string]> = [
   ["nombre", "w-nombre"],
@@ -45,13 +46,21 @@ const FOCO_INSCRIPCION: Array<[CampoInscripcion, string]> = [
 
 const ESCALA = Array.from({ length: 11 }, (_, i) => ({ value: String(i), title: String(i) }));
 const MONEDAS = [
-  { value: "ARS", label: "Pesos" },
-  { value: "USD", label: "Dólares" },
+  { value: "ARS", title: "Pesos" },
+  { value: "USD", title: "Dólares" },
 ];
 
+// Grupos de radios: el foco va al primero.
+const RADIOS: Record<string, string> = { "d-responde": "respondeATiempo", "d-moneda": "moneda" };
+
 function enfocar(id: string) {
-  // La pregunta 5 es un grupo de radios: el foco va al primero.
-  const el = id === "d-responde" ? document.querySelector<HTMLElement>('input[name="respondeATiempo"]') : document.getElementById(id);
+  const el = RADIOS[id] ? document.querySelector<HTMLElement>(`input[name="${RADIOS[id]}"]`) : document.getElementById(id);
+  if (id === "resultado-titulo" && el) {
+    // Sin esto el navegador baja lo mínimo y las cifras quedan fuera de pantalla (auditoría mobile, D3).
+    el.focus({ preventScroll: true });
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   el?.focus();
 }
 
@@ -204,21 +213,39 @@ export function DiagnosticoFlow() {
 
   return (
     <main>
-      <Section className="nc-block">
-        <div className="nc-split">
-          <div className="nc-split__left">
+      <Section className="nc-block nc-diag__intro">
+        <div className="nc-split nc-split--diag">
+          <div className="nc-split__left nc-stack nc-gap-24">
+            <Tag tone="accent">Para dueños de inmobiliarias</Tag>
             <SectionHeader
               as="h1"
               title="tu diagnóstico"
               highlight="gratuito."
-              // PROVISORIO: mismo texto que la sección del diagnóstico de la landing (pedido al PM).
-              body="Cinco preguntas sobre tu inmobiliaria y ves el resultado al instante. Más o menos está bien."
+              // Auditoría mobile (D1): qué te llevás. Copy a validar por Contenido.
+              body="Cinco preguntas sobre tu inmobiliaria. Al instante ves cuánto vale cada consulta y cuántas se responden después de los 5 minutos. Más o menos está bien."
             />
+            <div className="nc-stack nc-gap-12 nc-diag__promise">
+              <FeatureItem>Ves el resultado sin dejar tus datos.</FeatureItem>
+              <FeatureItem>Lo hace nocturna: respondemos las consultas de tu inmobiliaria en menos de 5 minutos, a toda hora.</FeatureItem>
+            </div>
           </div>
           <form className="nc-split__right nc-form nc-diag__form" noValidate onSubmit={calcular}>
+            {/* Primero la pregunta del anuncio g2 (auditoría mobile, D2). */}
+            <Field id="d-responde" group className="nc-field--wide" label="1. De cada 10 consultas, ¿cuántas respondés en menos de 5 minutos?" error={errores.respondeATiempo}>
+              <RadioCardGroup
+                name="respondeATiempo"
+                className="nc-scale"
+                value={respuestas.respondeATiempo}
+                onChange={(v) => cambiar("respondeATiempo", v)}
+                options={ESCALA}
+                aria-labelledby={fieldLabelId("d-responde")}
+                aria-describedby={errores.respondeATiempo ? fieldHelperId("d-responde") : undefined}
+                invalid={invalido("respondeATiempo")}
+              />
+            </Field>
             <Field
               id="d-consultas"
-              label={porSemana ? "¿Cuántas consultas te llegan por semana?" : "¿Cuántas consultas te llegan por mes?"}
+              label={porSemana ? "2. ¿Cuántas consultas te llegan por semana?" : "2. ¿Cuántas consultas te llegan por mes?"}
               helper="Sumando WhatsApp, Instagram, portales y llamadas."
               error={errores.consultas}
             >
@@ -235,42 +262,27 @@ export function DiagnosticoFlow() {
                 ]}
               />
             </Field>
-            <Field id="d-visitas" label="¿Cuántas visitas hacen por mes?" error={errores.visitas}>
+            <Field id="d-visitas" label="3. ¿Cuántas visitas hacen por mes?" error={errores.visitas}>
               <Input id="d-visitas" inputMode="numeric" autoComplete="off" value={respuestas.visitas} onChange={(e) => cambiar("visitas", e.target.value)} invalid={invalido("visitas")} aria-describedby={describe("d-visitas", "visitas")} />
             </Field>
-            <Field id="d-operaciones" label="¿Cuántas operaciones cierran por mes?" helper="Ventas y alquileres." error={errores.operaciones}>
+            <Field id="d-operaciones" label="4. ¿Cuántas operaciones cierran por mes?" helper="Ventas y alquileres." error={errores.operaciones}>
               <Input id="d-operaciones" inputMode="numeric" autoComplete="off" value={respuestas.operaciones} onChange={(e) => cambiar("operaciones", e.target.value)} invalid={invalido("operaciones")} aria-describedby={describe("d-operaciones", "operaciones", true)} />
             </Field>
-            <Field id="d-comision" label="¿Cuánto te queda en promedio por operación?" error={errorComision}>
-              <div className="nc-amount">
-                <Input id="d-comision" inputMode="numeric" autoComplete="off" value={respuestas.comision} onChange={(e) => cambiar("comision", e.target.value)} invalid={invalido("comision")} aria-describedby={errores.comision ? fieldHelperId("d-comision") : undefined} />
-                {/* PROVISORIO: "Moneda" (rótulo y texto del selector vacío). */}
-                <span id="d-moneda-label" className="nc-sr-only">
-                  Moneda
-                </span>
-                <Select
-                  id="d-moneda"
-                  value={respuestas.moneda}
-                  onChange={(v) => cambiar("moneda", v)}
-                  options={MONEDAS}
-                  placeholder="Moneda"
-                  required
-                  invalid={invalido("moneda")}
-                  aria-labelledby="d-moneda-label"
-                  aria-describedby={errores.moneda ? fieldHelperId("d-comision") : undefined}
-                />
-              </div>
-            </Field>
-            <Field id="d-responde" group className="nc-field--wide" label="De cada 10 consultas, ¿cuántas respondés en menos de 5 minutos?" error={errores.respondeATiempo}>
+            <Field id="d-comision" label="5. ¿Cuánto te queda en promedio por operación?" error={errorComision}>
+              <Input id="d-comision" inputMode="numeric" autoComplete="off" value={respuestas.comision} onChange={(e) => cambiar("comision", e.target.value)} invalid={invalido("comision")} aria-describedby={errores.comision ? fieldHelperId("d-comision") : undefined} />
+              {/* Moneda: mismo control que "Por mes / Por semana", con Pesos ya elegido (auditoría mobile, D2). */}
+              <span id="d-moneda-label" className="nc-sr-only">
+                Moneda
+              </span>
               <RadioCardGroup
-                name="respondeATiempo"
-                className="nc-scale"
-                value={respuestas.respondeATiempo}
-                onChange={(v) => cambiar("respondeATiempo", v)}
-                options={ESCALA}
-                aria-labelledby={fieldLabelId("d-responde")}
-                aria-describedby={errores.respondeATiempo ? fieldHelperId("d-responde") : undefined}
-                invalid={invalido("respondeATiempo")}
+                name="moneda"
+                className="nc-seg"
+                value={respuestas.moneda}
+                onChange={(v) => cambiar("moneda", v)}
+                options={MONEDAS}
+                aria-labelledby="d-moneda-label"
+                aria-describedby={errores.moneda ? fieldHelperId("d-comision") : undefined}
+                invalid={invalido("moneda")}
               />
             </Field>
             {control ? (
@@ -288,8 +300,8 @@ export function DiagnosticoFlow() {
 
       {r ? (
         <>
-          <Section className="nc-block">
-            <div className="nc-split">
+          <Section className="nc-block nc-diag__result">
+            <div className="nc-split nc-split--diag">
               <div className="nc-split__left">
                 {/* PROVISORIO: titular del resultado. */}
                 <SectionHeader headingId="resultado-titulo" headingTabIndex={-1} title="tu" highlight="resultado." />
@@ -308,6 +320,13 @@ export function DiagnosticoFlow() {
                 ) : (
                   <p className="nc-t-lead">Según lo que contás, respondés a tiempo todas las consultas.</p>
                 )}
+                {/* Del número a la acción, sin bajar dos pantallas (auditoría mobile, D4). */}
+                <div className="nc-stack nc-gap-12">
+                  <Button variant="accent" blockMobile href="#lista">
+                    Quiero uno de los dos lugares
+                  </Button>
+                  <p className="nc-t-body-m nc-muted">Programa piloto para dos inmobiliarias. Nahuel te escribe por WhatsApp.</p>
+                </div>
               </div>
             </div>
           </Section>
@@ -316,14 +335,11 @@ export function DiagnosticoFlow() {
             <div className="nc-stack nc-gap-24">
               <Tag tone="accent">Programa piloto</Tag>
               <Headline size="display-l" title="el programa piloto es para" highlight="dos inmobiliarias." />
-              <p className="nc-t-body-l nc-muted" style={{ maxWidth: 560 }}>
-                Respondemos cada consulta en menos de 5 minutos, a toda hora, y la seguimos hasta que la persona agenda la visita. Anotate en la lista de espera y Nahuel te escribe por WhatsApp.
-              </p>
             </div>
           </Section>
 
-          <Section className="nc-block">
-            <div className="nc-split">
+          <Section id="lista" className="nc-block">
+            <div className="nc-split nc-split--diag">
               <div className="nc-split__left">
                 <SectionHeader title="anotate en la" highlight="lista de espera." />
               </div>
