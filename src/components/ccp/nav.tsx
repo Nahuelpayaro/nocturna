@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { DIAGNOSTICO_HREF, NAV_LINKS } from "@/lib/ccp/assets";
+import { CTA_DIAGNOSTICO, DIAGNOSTICO_HREF, NAV_LINKS } from "@/lib/ccp/assets";
 import { CcpLockup, Wordmark } from "./brand";
 import { Button, IconButton } from "./buttons";
 
@@ -13,9 +13,11 @@ export type NavBarProps = {
   links?: Array<[string, string]>;
   /** Destino del logo. Por defecto /. */
   homeHref?: string;
+  /** Botón de menú en mobile. En /diagnostico no va: es una salida más. */
+  showMenu?: boolean;
 };
 
-export function NavBar({ logo = "ccp", showCta = true, links = NAV_LINKS, homeHref = "/" }: NavBarProps) {
+export function NavBar({ logo = "ccp", showCta = true, links = NAV_LINKS, homeHref = "/", showMenu = true }: NavBarProps) {
   const [open, setOpen] = useState(false);
   const logoNode = (
     <Link href={homeHref} className="nc-lockup" aria-label={logo === "wordmark" ? "nocturna" : "Cero Consultas Perdidas"}>
@@ -52,10 +54,10 @@ export function NavBar({ logo = "ccp", showCta = true, links = NAV_LINKS, homeHr
         ) : null}
         {showCta ? (
           <Button variant="accent" size="s" href={DIAGNOSTICO_HREF} className="nc-nav__cta">
-            Pedí tu diagnóstico
+            {CTA_DIAGNOSTICO}
           </Button>
         ) : null}
-        <IconButton variant="secondary" icon="menu-2" label="Abrir menú" expanded={open} controls="nc-nav-menu" onClick={() => setOpen(true)} className="nc-nav__menu" />
+        {showMenu ? <IconButton variant="secondary" icon="menu-2" label="Abrir menú" expanded={open} controls="nc-nav-menu" onClick={() => setOpen(true)} className="nc-nav__menu" /> : null}
       </header>
       {open ? (
         <div id="nc-nav-menu" className="nc-nav-open nc-paper" role="dialog" aria-modal="true" aria-label="Menú">
@@ -73,7 +75,7 @@ export function NavBar({ logo = "ccp", showCta = true, links = NAV_LINKS, homeHr
           {showCta ? (
             <div className="nc-nav-open__actions">
               <Button variant="accent" block href={DIAGNOSTICO_HREF}>
-                Pedí tu diagnóstico
+                {CTA_DIAGNOSTICO}
               </Button>
             </div>
           ) : null}

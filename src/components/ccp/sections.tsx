@@ -1,11 +1,12 @@
 import type { CSSProperties, ReactNode } from "react";
-import { cx, DIAGNOSTICO_HREF, INSTAGRAM_URL, NAV_LINKS, pad2 } from "@/lib/ccp/assets";
+import { CTA_DIAGNOSTICO, cx, DIAGNOSTICO_HREF, INSTAGRAM_URL, NAV_LINKS, pad2 } from "@/lib/ccp/assets";
 import { CcpLockup, InstagramGlyph, Wordmark } from "./brand";
 import { Button, Tag } from "./buttons";
 import { Callout, FactItem, FeatureItem, GuaranteeCard, ProblemCard, SectionHeader, StepCard } from "./cards";
 import { DeliverableItem, FaqItem } from "./disclosure";
 import { Agent, AgentReference, Hand, Headline, Highlight, Path } from "./graphics";
 import { NavBar } from "./nav";
+import { StickyCta } from "./sticky-cta";
 
 /* Bloques de Cero Consultas Perdidas (bundle.js del DS). Cada bloque es un solo marcado
    responsive: lo que cambia entre Desktop y Mobile se renderiza dos veces con
@@ -23,7 +24,7 @@ export function Hero() {
   return (
     <Section className="nc-hero">
       <div className="nc-hero__intro">
-        <Tag tone="accent">Programa piloto</Tag>
+        <Tag tone="accent">Para dueños de inmobiliarias</Tag>
         <h1 className="nc-headline nc-t-display-poster nc-hero__title">
           <span className="nc-headline__line">
             <Highlight>cero</Highlight>
@@ -39,19 +40,16 @@ export function Hero() {
         </p>
         <div className="nc-actions">
           <Button variant="primary" blockMobile href={DIAGNOSTICO_HREF}>
-            Pedí tu diagnóstico
+            {CTA_DIAGNOSTICO}
           </Button>
         </div>
-        <p className="nc-t-body-m nc-muted">
-          {/* PROVISORIO: pedido de textos al PM */}
-          El Programa Piloto es pago: entrás a cambio de documentar el caso con tus números.
-        </p>
-        <Agent width={240} className="nc-hero__agent nc-only-mobile" />
+        {/* "El piloto es pago" sale de debajo del botón: queda en Piloto y en Preguntas (auditoría mobile, L2). */}
         <div className="nc-hero__facts">
           <FactItem label="Primera respuesta" value="Menos de 5 minutos" />
           <FactItem label="Horario" value="A toda hora" />
           <FactItem label="Lo opera" value="nocturna" />
         </div>
+        <Agent width={140} className="nc-hero__agent nc-only-mobile" />
       </div>
     </Section>
   );
@@ -74,7 +72,7 @@ export function Problem() {
         mobile={{ highlight: "pierden", highlight2: "consultas.", showHighlight2: true }}
         body="Llegan por WhatsApp, Instagram o los portales, se responden tarde o nadie las sigue."
       />
-      <AgentReference pose="keyhole" height={170} className="nc-block__agent nc-only-mobile" style={{ transform: "rotate(1deg)" }} />
+      <AgentReference pose="keyhole" height={120} className="nc-block__agent nc-only-mobile" style={{ transform: "rotate(1deg)" }} />
       <div className="nc-grid nc-grid--3">
         {PROBLEMS.map(([title, text]) => (
           <ProblemCard key={title} title={title} text={text} showScribble={false} />
@@ -106,7 +104,7 @@ export function HowItWorks() {
         <AgentReference pose="trench-coat" height={200} style={{ transform: "rotate(2deg)" }} />
       </div>
       <div className="nc-agent-row nc-only-mobile">
-        <AgentReference pose="trench-coat" height={170} />
+        <AgentReference pose="trench-coat" height={120} />
       </div>
       <div className="nc-grid nc-grid--4">
         {STEPS.map(([n, title, text]) => (
@@ -124,7 +122,7 @@ export function CtaBand({ ink = false, title = "el programa piloto es para", hig
       <div className="nc-band__actions">
         {showHand ? <Hand gesture="pointing" height={109} className="nc-only-desktop" /> : null}
         <Button variant="primary" blockMobile href={DIAGNOSTICO_HREF}>
-          Pedí tu diagnóstico
+          {CTA_DIAGNOSTICO}
         </Button>
       </div>
     </section>
@@ -145,7 +143,7 @@ export function Guarantees() {
         mobile={{ highlight: "cubre", highlight2: "nocturna.", showHighlight2: true }}
         body="Dos garantías por contrato: una desde el primer mes y otra a los 90 días."
       />
-      <AgentReference pose="newspaper" height={170} className="nc-block__agent nc-only-mobile" style={{ transform: "rotate(2deg)" }} />
+      <AgentReference pose="newspaper" height={120} className="nc-block__agent nc-only-mobile" style={{ transform: "rotate(2deg)" }} />
       <div className="nc-grid nc-grid--2">
         <GuaranteeCard title="Respuesta en menos de 5 minutos" text="Cada consulta que tardemos más de 5 minutos en responder te la descontamos de la factura." />
         <GuaranteeCard
@@ -179,10 +177,11 @@ export function PilotBanner() {
           <h2 className="nc-t-display-l">Programa Piloto</h2>
           {/* PROVISORIO: pedido de textos al PM */}
           <p className="nc-t-body-l nc-muted">El piloto es pago, a cambio de documentar el caso con tus números.</p>
-          <div>
+          <div className="nc-stack nc-gap-12">
             <Button variant="accent" blockMobile href={DIAGNOSTICO_HREF}>
               Quiero uno de los dos lugares
             </Button>
+            <p className="nc-t-body-m nc-muted">Primero, el diagnóstico: cinco preguntas.</p>
           </div>
         </div>
         <div className="nc-stack nc-gap-32">
@@ -231,7 +230,7 @@ export function PilotIncludes() {
         </div>
         <div className="nc-split__right">
           {DELIVERABLES.map(([title, text], i) => (
-            <DeliverableItem key={title} number={pad2(i + 1)} title={title} text={text} defaultOpen={i === 0} />
+            <DeliverableItem key={title} number={pad2(i + 1)} title={title} text={text} defaultOpen={false} />
           ))}
         </div>
       </div>
@@ -253,7 +252,7 @@ export function Diagnosis() {
           <div>
             {/* PROVISORIO: pedido de textos al PM */}
             <Button variant="accent" blockMobile href={DIAGNOSTICO_HREF}>
-              Hacé el diagnóstico
+              {CTA_DIAGNOSTICO}
             </Button>
           </div>
         </div>
@@ -280,8 +279,8 @@ export function Faq() {
           <SectionHeader title="preguntas frecuentes." showHighlight={false} />
         </div>
         <div className="nc-split__right">
-          {FAQS.map(([q, a], i) => (
-            <FaqItem key={q} question={q} answer={a} defaultOpen={i === 0} />
+          {FAQS.map(([q, a]) => (
+            <FaqItem key={q} question={q} answer={a} defaultOpen={false} />
           ))}
         </div>
       </div>
@@ -289,15 +288,18 @@ export function Faq() {
   );
 }
 
-export function Footer({ showCta = true, links = NAV_LINKS }: { showCta?: boolean; links?: Array<[string, string]> }) {
-  const cols: Array<[string, Array<[string, string]>]> = [
-    ["Página", links],
-    // Contacto: nocturna no tiene número de WhatsApp público, queda solo Instagram.
-    ["Contacto", [["Instagram", INSTAGRAM_URL]]],
-    ["Legal", [["Privacidad", "#"], ["Términos", "#"]]],
-  ];
+export function Footer({ showCta = true, links = NAV_LINKS, compact = false }: { showCta?: boolean; links?: Array<[string, string]>; compact?: boolean }) {
+  // Privacidad y Términos no van hasta que existan sus páginas: eran links a "#" (auditoría mobile, L9).
+  // compact: solo marca, copyright e Instagram, sin links a la landing (/diagnostico, auditoría mobile, D5).
+  const cols: Array<[string, Array<[string, string]>]> = compact
+    ? []
+    : [
+        ["Página", links],
+        // Contacto: nocturna no tiene número de WhatsApp público, queda solo Instagram.
+        ["Contacto", [["Instagram", INSTAGRAM_URL]]],
+      ];
   return (
-    <footer className="nc-footer nc-paper" data-theme="ink">
+    <footer className={cx("nc-footer nc-paper", compact && "nc-footer--compact")} data-theme="ink">
       {showCta ? (
         <div className="nc-footer__cta">
           <Headline
@@ -311,7 +313,7 @@ export function Footer({ showCta = true, links = NAV_LINKS }: { showCta?: boolea
           <p className="nc-t-body-l nc-muted">Hacé el diagnóstico: con tus números ves cuántas consultas se te pueden enfriar y cuánto vale cada una.</p>
           <div className="nc-actions">
             <Button variant="accent" blockMobile href={DIAGNOSTICO_HREF}>
-              Pedí tu diagnóstico
+              {CTA_DIAGNOSTICO}
             </Button>
           </div>
         </div>
@@ -321,6 +323,7 @@ export function Footer({ showCta = true, links = NAV_LINKS }: { showCta?: boolea
           <CcpLockup />
           <Wordmark height={24} />
         </div>
+        {cols.length ? (
         <div className="nc-footer__cols">
           {cols.map(([heading, links]) => (
             <div key={heading} className="nc-footer__col">
@@ -333,6 +336,7 @@ export function Footer({ showCta = true, links = NAV_LINKS }: { showCta?: boolea
             </div>
           ))}
         </div>
+        ) : null}
       </div>
       <div className="nc-footer__copy">
         <span className="nc-t-body-m nc-subtle">© 2026 nocturna - Buenos Aires</span>
@@ -346,20 +350,21 @@ export function Footer({ showCta = true, links = NAV_LINKS }: { showCta?: boolea
 
 export function LandingCcp() {
   return (
-    <div className="nc-landing nc-paper">
+    <div className="nc-landing nc-landing--sticky nc-paper">
       <NavBar />
       <main>
+        {/* Orden de la auditoría mobile (L3): la banda del diagnóstico sube y reemplaza a la banda negra repetida. */}
         <Hero />
         <Problem />
         <HowItWorks />
-        <CtaBand ink />
+        <Diagnosis />
         <Guarantees />
         <PilotBanner />
         <PilotIncludes />
-        <Diagnosis />
         <Faq />
       </main>
       <Footer />
+      <StickyCta />
     </div>
   );
 }
