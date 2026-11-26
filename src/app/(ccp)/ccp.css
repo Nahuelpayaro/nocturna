@@ -249,7 +249,7 @@
 
 /* ---------- Resaltador (Graphic/Highlight): bloque de marcador detrás de la frase clave ---------- */
 .nc-headline { display: flex; flex-direction: column; align-items: flex-start; margin: 0; }
-.nc-headline__plain { display: block; position: relative; z-index: 1; white-space: pre-line; }
+.nc-headline__plain { display: block; position: relative; z-index: 1; white-space: pre-line; text-wrap: balance; }
 .nc-headline__line { display: block; }
 .nc-hl { position: relative; display: inline; color: var(--color-fg-on-accent); z-index: 0; }
 /* Clash Display: ascendente 0,89 em, altura de mayúscula 0,67 em, descendente 0,25 em. El bloque arranca justo sobre la mayúscula y baja 0,07 em bajo la línea de base. */
@@ -260,7 +260,7 @@
 .nc-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-12); height: 48px; padding: var(--space-12) var(--space-24); border: 1px solid transparent; border-radius: var(--radius-none); font-family: var(--font-text); font-weight: 500; font-size: var(--text-label-l); line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer; transition: background-color 120ms, box-shadow 120ms; }
 .nc-btn--s { height: 36px; padding: var(--space-8) var(--space-16); gap: var(--space-8); font-size: var(--text-label-m); }
 .nc-btn--block { width: 100%; }
-.nc-btn:focus-visible, .nc-iconbtn:focus-visible, .nc-link:focus-visible, .nc-input:focus-visible, .nc-faq__q:focus-visible, .nc-deliv__title:focus-visible, .nc-deliv__icon:focus-visible, .nc-nav a:focus-visible, .nc-footer a:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 3px; }
+.nc-btn:focus-visible, .nc-iconbtn:focus-visible, .nc-link:focus-visible, .nc-input:focus-visible, .nc-faq__q:focus-visible, .nc-deliv__row:focus-visible, .nc-nav a:focus-visible, .nc-footer a:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 3px; }
 .nc-btn--primary { background: var(--color-bg-inverse); color: var(--color-fg-inverse); }
 .nc-btn--primary:hover, .nc-btn--primary.is-hover { background: var(--color-bg-inverse-hover); }
 .nc-btn--accent { background: var(--color-accent); color: var(--color-fg-on-accent); }
@@ -340,6 +340,7 @@
 .nc-amount .nc-input { flex: 1; min-width: 0; }
 .nc-amount .nc-select-wrap { width: 40%; flex: none; }
 .nc-diag__stats { display: flex; flex-direction: column; gap: var(--space-48); }
+#resultado-titulo { scroll-margin-top: 24px; }
 .nc-diag__form .nc-btn { align-self: flex-start; }
 .nc-link--button { background: none; border-width: 0 0 1px; padding: 0 0 var(--space-4); cursor: pointer; align-self: flex-start; }
 
@@ -362,10 +363,12 @@
 .nc-footer__col a { color: var(--color-fg); text-decoration: none; }
 .nc-footer__copy { display: flex; align-items: center; justify-content: space-between; }
 .nc-footer__copy a { display: inline-flex; }
+.nc-footer--compact { gap: var(--space-32); padding-top: var(--space-48); }
 
 /* ---------- Tarjetas ---------- */
 .nc-faq { display: flex; flex-direction: column; gap: var(--space-16); padding: var(--space-24) 0; width: 100%; }
-.nc-faq__q { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-24); width: 100%; padding: 0; background: none; border: 0; color: var(--color-fg); text-align: left; cursor: pointer; }
+.nc-faq__q { display: flex; justify-content: space-between; align-items: center; gap: var(--space-24); width: 100%; min-height: 48px; padding: 0; background: none; border: 0; color: var(--color-fg); text-align: left; cursor: pointer; }
+.nc-faq__icon { display: inline-flex; flex: none; }
 .nc-faq__a { padding-right: var(--space-48); }
 .nc-step { display: flex; flex-direction: column; gap: var(--space-12); max-width: 320px; }
 .nc-feature { display: flex; align-items: flex-start; gap: var(--space-12); }
@@ -374,10 +377,12 @@
 .nc-stat--accent { background: var(--color-accent); color: var(--color-fg-on-accent); padding: var(--space-32); }
 .nc-problem { display: flex; flex-direction: column; gap: var(--space-16); max-width: 360px; }
 .nc-guarantee { display: flex; flex-direction: column; gap: var(--space-16); }
-.nc-deliv { display: flex; align-items: flex-start; gap: var(--space-24); padding: var(--space-24) 0; width: 100%; }
+.nc-deliv { display: flex; flex-direction: column; gap: var(--space-16); padding: var(--space-16) 0; width: 100%; }
+.nc-deliv__row { display: flex; align-items: center; gap: var(--space-24); width: 100%; min-height: 48px; background: none; border: 0; padding: 0; color: var(--color-fg); text-align: left; cursor: pointer; }
 .nc-deliv__num { width: 52px; flex: none; }
-.nc-deliv__content { flex: 1; display: flex; flex-direction: column; gap: var(--space-16); }
-.nc-deliv__title, .nc-deliv__icon { background: none; border: 0; padding: 0; color: var(--color-fg); text-align: left; cursor: pointer; }
+.nc-deliv__title { flex: 1; }
+.nc-deliv__icon { display: inline-flex; flex: none; }
+.nc-deliv__text { padding-left: calc(52px + var(--space-24)); }
 
 /* ---------- Bloques ---------- */
 .nc-sh { display: flex; flex-direction: column; gap: var(--layout-heading-gap); width: 100%; }
@@ -445,6 +450,15 @@
 @media (max-width: 1023px) and (min-width: 768px) {
   .nc-nav__links { display: none; }
   .nc-hero__agent { width: 200px; height: auto; }
+  /* Auditoría mobile D6 y L8: el diagnóstico y los encabezados "split" se apilan; la escala va en dos filas. */
+  .nc-split--diag { flex-direction: column; gap: var(--layout-block-gap); }
+  .nc-split--diag .nc-split__left { width: auto; }
+  .nc-scale { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .nc-sh--split { flex-direction: column; align-items: flex-start; gap: var(--space-24); }
+  .nc-sh--split .nc-sh__body { width: auto; max-width: 560px; }
+  .nc-how__path { flex-wrap: wrap; justify-content: flex-start; }
+  .nc-how__path .nc-path { max-width: 100%; }
+  .nc-block__agent { position: static; align-self: flex-end; }
 }
 
 /* ---------- Mobile (modo Mobile del Figma, frame de 390) ---------- */
@@ -482,4 +496,16 @@
   .nc-scale { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .nc-seg, .nc-amount { max-width: none; }
   .nc-diag__form .nc-btn { align-self: stretch; }
+
+  /* Auditoría mobile */
+  .nc-diag__result { padding-top: var(--space-48); }
+  .nc-sh--centered { align-items: flex-start; text-align: left; }
+  .nc-sh--centered .nc-headline { align-items: flex-start; }
+  .nc-deliv__text { padding-left: 0; }
+  .nc-landing--sticky { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
+
+/* Barra fija con el botón al diagnóstico (solo mobile; auditoría mobile, L1). */
+.nc-sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: var(--space-12) var(--layout-gutter) calc(var(--space-12) + env(safe-area-inset-bottom)); background: var(--color-bg); border-top: 1px solid var(--color-border); transform: translateY(100%); transition: transform 200ms ease; }
+.nc-sticky-cta.is-visible { transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .nc-sticky-cta { transition: none; } }

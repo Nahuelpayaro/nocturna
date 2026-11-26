@@ -23,6 +23,9 @@ export function themeId(theme?: "paper" | "ink", accent?: "ccp" | "nocturna"): T
 /** Destino de todos los botones "Pedí tu diagnóstico" de la landing. */
 export const DIAGNOSTICO_HREF = "/diagnostico";
 
+/** Texto único de los botones que llevan al diagnóstico; coincide con el título del anuncio g2 (auditoría mobile, L4). */
+export const CTA_DIAGNOSTICO = "Hacé el diagnóstico gratuito";
+
 /** Instagram de nocturna (ventas/02-canales.md). */
 export const INSTAGRAM_URL = "https://www.instagram.com/_____nocturna/";
 

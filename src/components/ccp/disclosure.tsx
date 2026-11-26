@@ -15,7 +15,9 @@ export function FaqItem({ question = DEFAULT_FAQ_QUESTION, answer = DEFAULT_FAQ_
     <div className={cx("nc-faq", open && "is-open")}>
       <button type="button" className="nc-faq__q" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
         <span className="nc-t-body-l-strong">{question}</span>
-        <Icon name={open ? "minus" : "plus"} />
+        <span className="nc-faq__icon" aria-hidden="true">
+          <Icon name={open ? "minus" : "plus"} />
+        </span>
       </button>
       <p id={id} className="nc-faq__a nc-t-body-l nc-muted" hidden={!open}>
         {answer}
@@ -29,18 +31,17 @@ export function DeliverableItem({ number, title, text, defaultOpen = false }: { 
   const id = useId();
   return (
     <div className={cx("nc-deliv", open && "is-open")}>
-      <span className="nc-t-data-l nc-deliv__num">{number}</span>
-      <div className="nc-deliv__content">
-        <button type="button" className="nc-deliv__title nc-t-title" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
-          {title}
-        </button>
-        <p id={id} className="nc-t-body-l nc-muted" hidden={!open}>
-          {text}
-        </p>
-      </div>
-      <button type="button" className="nc-deliv__icon" aria-label={open ? "Cerrar" : "Abrir"} aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
-        <Icon name={open ? "minus" : "plus"} />
+      {/* Toda la fila es un solo botón, de 48 px como mínimo (auditoría mobile, L5). */}
+      <button type="button" className="nc-deliv__row" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
+        <span className="nc-t-data-l nc-deliv__num">{number}</span>
+        <span className="nc-deliv__title nc-t-title">{title}</span>
+        <span className="nc-deliv__icon" aria-hidden="true">
+          <Icon name={open ? "minus" : "plus"} />
+        </span>
       </button>
+      <p id={id} className="nc-deliv__text nc-t-body-l nc-muted" hidden={!open}>
+        {text}
+      </p>
     </div>
   );
 }
