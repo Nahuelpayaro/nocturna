@@ -67,9 +67,9 @@ export function Problem() {
       <AgentReference pose="keyhole" height={170} className="nc-block__agent nc-only-desktop" style={{ transform: "rotate(1deg)" }} />
       <SectionHeader
         layout="split"
-        title="muchas inmobiliarias"
-        highlight="pierden consultas."
-        mobile={{ highlight: "pierden", highlight2: "consultas.", showHighlight2: true }}
+        title="las consultas"
+        highlight="no esperan."
+        mobile={{ highlight: "no", highlight2: "esperan.", showHighlight2: true }}
         body="Llegan por WhatsApp, Instagram o los portales, se responden tarde o nadie las sigue."
       />
       <AgentReference pose="keyhole" height={120} className="nc-block__agent nc-only-mobile" style={{ transform: "rotate(1deg)" }} />
@@ -304,13 +304,13 @@ export function Footer({ showCta = true, links = NAV_LINKS, compact = false }: {
         <div className="nc-footer__cta">
           <Headline
             size="display-xl"
-            title="¿cuántas consultas"
-            // PROVISORIO: pedido de textos al PM
-            highlight="se te enfriaron este mes?"
-            mobile={{ highlight: "se te enfriaron", highlight2: "este mes?", showHighlight2: true }}
+            title="¿cuánto tarda tu inmobiliaria"
+            // Textos de Contenido (TEXTOS-PERDIDA.md, 26/11), aprobados por Nahuel.
+            highlight="en contestar una consulta?"
+            mobile={{ highlight: "en contestar", highlight2: "una consulta?", showHighlight2: true }}
           />
           {/* PROVISORIO: pedido de textos al PM */}
-          <p className="nc-t-body-l nc-muted">Hacé el diagnóstico: con tus números ves cuántas consultas se te pueden enfriar y cuánto vale cada una.</p>
+          <p className="nc-t-body-l nc-muted">Hacé el diagnóstico: con tus números ves cuántas consultas respondés después de 5 minutos y cuánto vale cada una.</p>
           <div className="nc-actions">
             <Button variant="accent" blockMobile href={DIAGNOSTICO_HREF}>
               {CTA_DIAGNOSTICO}
