@@ -315,7 +315,7 @@ export function DiagnosticoFlow() {
                       value={Math.round(r.resultado.expuestas)}
                       label={`De ${r.respuestas.consultasMes} consultas por mes, unas ${Math.round(r.resultado.expuestas)} se responden después de 5 minutos.`}
                     />
-                    <StatCard tone="accent" value={formatMonto(r.resultado.escala, moneda)} label={`Cada 10 % de esas consultas que recuperes son ${formatMonto(r.resultado.escala, moneda)} por mes.`} />
+                    <StatCard tone="accent" value={formatMonto(r.resultado.escala, moneda)} label={`Cada 10 % de esas consultas que pases a responder en menos de 5 minutos vale ${formatMonto(r.resultado.escala, moneda)} por mes.`} />
                   </>
                 ) : (
                   <p className="nc-t-lead">Según lo que contás, respondés a tiempo todas las consultas.</p>
