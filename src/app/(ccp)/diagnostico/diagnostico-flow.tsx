@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Button, Checkbox, Field, FeatureItem, FormStatus, Headline, Icon, Input, RadioCardGroup, Section, SectionHeader, StatCard, Tag, fieldHelperId, fieldLabelId } from "@/components/ccp";
+import { Button, Field, FeatureItem, FormStatus, Headline, Input, RadioCardGroup, Section, SectionHeader, StatCard, Tag, fieldHelperId, fieldLabelId } from "@/components/ccp";
 import { cx } from "@/lib/ccp/assets";
 import {
   calcularDiagnostico,
@@ -41,7 +41,6 @@ const FOCO_INSCRIPCION: Array<[CampoInscripcion, string]> = [
   ["inmobiliaria", "w-inmobiliaria"],
   ["whatsapp", "w-whatsapp"],
   ["mail", "w-mail"],
-  ["acepta", "w-acepta"],
 ];
 
 const ESCALA = Array.from({ length: 11 }, (_, i) => ({ value: String(i), title: String(i) }));
@@ -72,7 +71,8 @@ export function DiagnosticoFlow() {
   const [control, setControl] = useState<{ mensaje: string; campos: CampoDiagnostico[] } | null>(null);
   const [resultado, setResultado] = useState<{ respuestas: Respuestas; resultado: Resultado } | null>(null);
 
-  const [datos, setDatos] = useState({ nombre: "", inmobiliaria: "", whatsapp: "", mail: "", acepta: false });
+  // Sin casilla: anotarse con el aviso debajo del botón es aceptar que te escriban (Nahuel, 26/11). La API sigue pidiendo acepta: true.
+  const [datos, setDatos] = useState({ nombre: "", inmobiliaria: "", whatsapp: "", mail: "", acepta: true });
   const [erroresForm, setErroresForm] = useState<Partial<Record<CampoInscripcion, string>>>({});
   const [estado, setEstado] = useState<Estado>("idle");
   // Última inscripción guardada; si el dueño corrige el número, la próxima la reemplaza.
@@ -160,7 +160,7 @@ export function DiagnosticoFlow() {
     }
     if (res.reason === "invalid" && res.fieldErrors) {
       const f = res.fieldErrors;
-      setErroresForm({ nombre: f.nombre, inmobiliaria: f.inmobiliaria, whatsapp: f.whatsapp, mail: f.mail, acepta: f.acepta });
+      setErroresForm({ nombre: f.nombre, inmobiliaria: f.inmobiliaria, whatsapp: f.whatsapp, mail: f.mail });
     }
     setEstado(res.reason === "duplicate" ? "duplicate" : "error");
   };
@@ -357,26 +357,6 @@ export function DiagnosticoFlow() {
                 <Field id="w-mail" label="Tu mail (opcional)" error={erroresForm.mail}>
                   <Input id="w-mail" type="email" inputMode="email" autoComplete="email" maxLength={MAX_MAIL} value={datos.mail} onChange={(e) => dato("mail", e.target.value)} invalid={Boolean(erroresForm.mail)} aria-describedby={erroresForm.mail ? fieldHelperId("w-mail") : undefined} />
                 </Field>
-                <div className={cx("nc-field", erroresForm.acepta && "is-error")}>
-                  <Checkbox
-                    id="w-acepta"
-                    checked={datos.acepta}
-                    onChange={(acepta) => {
-                      setDatos((d) => ({ ...d, acepta }));
-                      setErroresForm((e) => ({ ...e, acepta: undefined }));
-                    }}
-                    invalid={Boolean(erroresForm.acepta)}
-                    aria-describedby={erroresForm.acepta ? fieldHelperId("w-acepta") : undefined}
-                  >
-                    Acepto que me contacten por WhatsApp
-                  </Checkbox>
-                  {erroresForm.acepta ? (
-                    <span id={fieldHelperId("w-acepta")} className="nc-field__helper nc-t-body-m">
-                      <Icon name="alert-circle" size={16} />
-                      <span>{erroresForm.acepta}</span>
-                    </span>
-                  ) : null}
-                </div>
                 <div aria-live="polite">
                   {estado === "sending" ? <p className="nc-t-body-m nc-muted">Enviando tus datos.</p> : null}
                   {estado === "duplicate" ? <FormStatus tone="success">Ese número ya está en la lista. Nahuel te escribe por WhatsApp.</FormStatus> : null}
@@ -386,7 +366,7 @@ export function DiagnosticoFlow() {
                   <Button type="submit" variant="accent" blockMobile disabled={estado === "sending"}>
                     Anotarme en la lista
                   </Button>
-                  <p className="nc-t-body-m nc-muted">Nahuel te escribe por WhatsApp.</p>
+                  <p className="nc-t-body-m nc-muted">Al anotarte aceptás que te escribamos por WhatsApp. Nahuel te escribe por ahí.</p>
                 </div>
                 <p className="nc-t-body-m nc-muted">
                   Guardamos tus datos y tus respuestas del diagnóstico para escribirte sobre el programa piloto y para saber por dónde llegaste. No los vendemos. El píxel de Meta solo registra que te anotaste, sin tu nombre, tu WhatsApp ni tu mail. Para ver, corregir o borrar tus datos, respondé el mensaje de Nahuel o escribinos por Instagram.
