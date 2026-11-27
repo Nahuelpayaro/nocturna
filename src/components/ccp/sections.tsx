@@ -7,6 +7,7 @@ import { DeliverableItem, FaqItem } from "./disclosure";
 import { Agent, AgentReference, Hand, Headline, Highlight, Path } from "./graphics";
 import { NavBar } from "./nav";
 import { StickyCta } from "./sticky-cta";
+import { LandingMotion } from "./landing-motion";
 
 /* Bloques de Cero Consultas Perdidas (bundle.js del DS). Cada bloque es un solo marcado
    responsive: lo que cambia entre Desktop y Mobile se renderiza dos veces con
@@ -82,9 +83,21 @@ export function Problem() {
   );
 }
 
-const STEPS: Array<[string, string, string]> = [
+const STEPS: Array<[string, string, ReactNode]> = [
   ["01", "Consulta", "Llega por WhatsApp, Instagram o los portales. Entra a una sola bandeja."],
-  ["02", "Respuesta", "Respondemos en menos de 5 minutos, a toda hora, y calificamos al interesado."],
+  [
+    "02",
+    "Respuesta",
+    // MOTION-WEB.md piece 9: the only orange of the section, drawn under the promise. Same text.
+    <>
+      Respondemos en{" "}
+      <span className="nc-mark">
+        menos de 5 minutos
+        <span className="nc-mark__line" aria-hidden="true" />
+      </span>
+      , a toda hora, y calificamos al interesado.
+    </>,
+  ],
   ["03", "Seguimiento", "Si no contesta, lo seguimos. La conversación no se enfría."],
   ["04", "Visita", "Tu equipo entra cuando el interesado está listo para visitar."],
 ];
@@ -365,6 +378,7 @@ export function LandingCcp() {
       </main>
       <Footer />
       <StickyCta />
+      <LandingMotion />
     </div>
   );
 }

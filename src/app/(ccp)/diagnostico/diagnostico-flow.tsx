@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
 import { Button, Field, FeatureItem, FormStatus, Headline, Input, RadioCardGroup, Section, SectionHeader, StatCard, Tag, fieldHelperId, fieldLabelId } from "@/components/ccp";
 import { cx } from "@/lib/ccp/assets";
 import {
@@ -19,6 +19,22 @@ import {
 } from "@/lib/ccp/diagnostico";
 import { atribucionParaFormulario, track } from "@/lib/ccp/track";
 import { joinWaitlist } from "./actions";
+import { loadGsapWhenIdle } from "@/components/ccp/gsap-client";
+import { animarResultado } from "./resultado-motion";
+
+/** A figure of the result that counts up (MOTION-WEB.md piece 1). The visible number is
+   aria-hidden and keyed by its value, so React never patches text that GSAP is writing;
+   screen readers get the final value once, from the sr-only twin. */
+function Cifra({ n, texto, fmt }: { n: number; texto: string; fmt: "monto" | "int" }) {
+  return (
+    <>
+      <span key={`${fmt}-${n}`} aria-hidden="true" data-count={n} data-fmt={fmt}>
+        {texto}
+      </span>
+      <span className="nc-sr-only">{texto}</span>
+    </>
+  );
+}
 
 /* /diagnostico: preguntas → resultado al instante → invitación a la lista de espera → formulario → confirmación.
    Preguntas y cálculo: ventas/02-canales.md. Textos de la lista de espera: TEXTOS-LISTA-DE-ESPERA.md, secciones 1 a 3,
@@ -90,6 +106,19 @@ export function DiagnosticoFlow() {
   }, [foco]);
   const pedirFoco = (id: string) => setFoco((f) => ({ id, n: (f?.n ?? 0) + 1 }));
 
+  // GSAP loads after the form is on screen, never before it (MOTION-WEB.md: /diagnostico stays still on load).
+  useEffect(() => {
+    loadGsapWhenIdle().catch(() => {});
+  }, []);
+  // Each valid "Ver mi resultado" replays the result sequence (piece 1); start states are set before paint.
+  const resultadoRef = useRef<HTMLDivElement>(null);
+  const [vuelta, setVuelta] = useState(0);
+  useLayoutEffect(() => {
+    if (vuelta > 0 && resultado) animarResultado(resultadoRef.current, resultado.respuestas.moneda);
+    // Only on a new calculation; `resultado` changes together with `vuelta`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vuelta]);
+
   const cambiar = (campo: keyof DiagnosticoInput, valor: string) => {
     if (!empezo.current && campo !== "periodo") {
       empezo.current = true;
@@ -119,6 +148,7 @@ export function DiagnosticoFlow() {
       completo.current = true;
       track("diagnostic_complete");
     }
+    setVuelta((n) => n + 1);
     pedirFoco("resultado-titulo");
   };
 
@@ -301,21 +331,21 @@ export function DiagnosticoFlow() {
       {r ? (
         <>
           <Section className="nc-block nc-diag__result">
-            <div className="nc-split nc-split--diag">
+            <div ref={resultadoRef} className="nc-split nc-split--diag">
               <div className="nc-split__left">
                 {/* PROVISORIO: titular del resultado. */}
                 <SectionHeader headingId="resultado-titulo" headingTabIndex={-1} title="tu" highlight="resultado." />
               </div>
               <div className="nc-split__right nc-diag__stats" aria-live="polite">
                 {/* PROVISORIO: textos del resultado (pedido al PM). Nunca un total de dinero perdido (02-canales). */}
-                <StatCard value={formatMonto(r.resultado.valorConsulta, moneda)} label={`Cada consulta vale ${formatMonto(r.resultado.valorConsulta, moneda)} para tu inmobiliaria.`} />
+                <StatCard value={<Cifra n={Math.round(r.resultado.valorConsulta)} texto={formatMonto(r.resultado.valorConsulta, moneda)} fmt="monto" />} label={`Cada consulta vale ${formatMonto(r.resultado.valorConsulta, moneda)} para tu inmobiliaria.`} />
                 {Math.round(r.resultado.expuestas) > 0 ? (
                   <>
                     <StatCard
-                      value={Math.round(r.resultado.expuestas)}
+                      value={<Cifra n={Math.round(r.resultado.expuestas)} texto={String(Math.round(r.resultado.expuestas))} fmt="int" />}
                       label={`De ${r.respuestas.consultasMes} consultas por mes, unas ${Math.round(r.resultado.expuestas)} se responden después de 5 minutos.`}
                     />
-                    <StatCard tone="accent" value={formatMonto(r.resultado.escala, moneda)} label={`Cada 10 % de esas consultas que pases a responder en menos de 5 minutos vale ${formatMonto(r.resultado.escala, moneda)} por mes.`} />
+                    <StatCard tone="accent" value={<Cifra n={Math.round(r.resultado.escala)} texto={formatMonto(r.resultado.escala, moneda)} fmt="monto" />} label={`Cada 10 % de esas consultas que pases a responder en menos de 5 minutos vale ${formatMonto(r.resultado.escala, moneda)} por mes.`} />
                   </>
                 ) : (
                   <p className="nc-t-lead">Según lo que contás, respondés a tiempo todas las consultas.</p>
