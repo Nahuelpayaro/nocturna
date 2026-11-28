@@ -506,6 +506,49 @@
 }
 
 /* Barra fija con el botón al diagnóstico (solo mobile; auditoría mobile, L1). */
-.nc-sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: var(--space-12) var(--layout-gutter) calc(var(--space-12) + env(safe-area-inset-bottom)); background: var(--color-bg); border-top: 1px solid var(--color-border); transform: translateY(100%); transition: transform 200ms ease; }
-.nc-sticky-cta.is-visible { transform: translateY(0); }
+.nc-sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: var(--space-12) var(--layout-gutter) calc(var(--space-12) + env(safe-area-inset-bottom)); background: var(--color-bg); border-top: 1px solid var(--color-border); transform: translateY(100%); transition: transform 180ms var(--ease-exit); }
+.nc-sticky-cta.is-visible { transform: translateY(0); transition: transform 280ms var(--ease-brand); }
 @media (prefers-reduced-motion: reduce) { .nc-sticky-cta { transition: none; } }
+
+/* ---------- Movimiento (MOTION-WEB.md, Creatividad 27/11) ----------
+   CSS for the micro-interactions; the sequences live in GSAP (components/ccp/*motion*).
+   Nothing starts hidden from CSS: the page reads the same without JavaScript. */
+.nc-root { --ease-brand: cubic-bezier(.22, .61, .36, 1); --ease-exit: cubic-bezier(.7, 0, .84, 0); }
+.nc-t-data-xl { font-variant-numeric: tabular-nums; }
+
+/* 4 · Botones de acción: press, arrow nudge on hover (only where hover exists), one-shot nudge. */
+.nc-btn { transition: background-color 120ms var(--ease-brand), box-shadow 120ms var(--ease-brand), transform 120ms var(--ease-brand); }
+.nc-btn:active { transform: scale(0.98); transition-duration: 80ms; }
+.nc-btn .nc-icon { transition: transform 200ms var(--ease-brand); }
+@media (hover: hover) { .nc-btn:hover .nc-icon { transform: translateX(4px); } }
+.nc-btn:focus-visible .nc-icon { transform: translateX(4px); }
+@keyframes nc-nudge { 0%, 100% { transform: translateX(0); } 40% { transform: translateX(4px); } }
+.nc-nudge .nc-icon { animation: nc-nudge 500ms var(--ease-brand) 1; }
+
+/* 2 · Opciones del diagnóstico: press and a soft fill when chosen (box-shadow, never border-width). */
+.nc-radiocard { transition: background-color 160ms var(--ease-brand), box-shadow 160ms var(--ease-brand), transform 120ms var(--ease-brand); }
+.nc-radiocard:active { transform: scale(0.96); transition-duration: 80ms; }
+
+/* 3 · Errores: border fades in, the message slides in 4 px. No shake. */
+.nc-input { transition: border-color 160ms var(--ease-brand), box-shadow 160ms var(--ease-brand); }
+@keyframes nc-error-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.nc-field.is-error .nc-field__helper, .nc-status.is-error { animation: nc-error-in 200ms var(--ease-brand) 1; }
+
+/* 8 · Acordeones: the plus is two bars; the vertical one flattens and the icon turns. */
+.nc-plus { position: relative; display: inline-block; width: 24px; height: 24px; flex: none; transition: transform 200ms var(--ease-brand); }
+.nc-plus::before, .nc-plus::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 2px; background: currentColor; transform: translate(-50%, -50%); transition: transform 200ms var(--ease-brand); }
+.nc-plus::after { transform: translate(-50%, -50%) rotate(90deg); }
+.is-open .nc-plus { transform: rotate(90deg); }
+.is-open .nc-plus::after { transform: translate(-50%, -50%) rotate(90deg) scaleX(0); }
+.nc-acc { overflow: hidden; }
+
+/* 9 · "menos de 5 minutos" in step 02: an orange underline drawn under the words. */
+.nc-mark { position: relative; white-space: nowrap; }
+.nc-mark__line { position: absolute; left: -2px; right: -2px; bottom: -0.3em; height: 0.3em; background: var(--color-accent); -webkit-mask: url(/ccp/Trazos/underline-03.svg) center / 100% 100% no-repeat; mask: url(/ccp/Trazos/underline-03.svg) center / 100% 100% no-repeat; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nc-btn, .nc-btn .nc-icon, .nc-radiocard, .nc-input, .nc-plus, .nc-plus::before, .nc-plus::after { transition: none !important; }
+  .nc-btn:active, .nc-radiocard:active { transform: none; }
+  .nc-btn:hover .nc-icon, .nc-btn:focus-visible .nc-icon { transform: none; }
+  .nc-nudge .nc-icon, .nc-field.is-error .nc-field__helper, .nc-status.is-error { animation: none; }
+}
